@@ -1,11 +1,11 @@
 const moment = require('moment');
 const http = require('http');
 const socketIo = require('socket.io');
-const { Message } = require('./models/Message');
-const { contactsDummy } = require('../back/models/Contacts');
-const { Conversation } = require('../back/models/Conversation');
-const { User } = require('../back/models/User');
-const { v4 } = require('uuid');
+const {Message} = require('./models/Message');
+const {contactsDummy} = require('./models/Contacts.js');
+const {Conversation} = require('./models/Conversation.js');
+const {User} = require('./models/User.js');
+const {v4} = require('uuid');
 
 
 const socket = app => {
@@ -21,13 +21,13 @@ const socket = app => {
 
 
     socket.on('join', user => {
-      socket.user = { ...user, id: socket.client.id };
-      activeUsers[socket.client.id] = new User({ ...user, id: v4() });
-      socket.emit('login', { activeUsers, contactsDummy, activeChats, user: socket.user });
+      socket.user = {...user, id: socket.client.id};
+      activeUsers[socket.client.id] = new User({...user, id: v4()});
+      socket.emit('login', {activeUsers, contactsDummy, activeChats, user: socket.user});
       sendConversations(socket);
     });
 
-    socket.on('joinChat', ({ sender, receiver }) => {
+    socket.on('joinChat', ({sender, receiver}) => {
       let id = v4();
       activeChats[id] = new Conversation({
         id,
@@ -54,8 +54,8 @@ const socket = app => {
         activeChats[chatId].lastMessage = message;
         activeChats[chatId].messages[messageId] = message;
       }
-      socket.emit('message', { message, chatId, messageId });
-      socket.broadcast.emit('message', { message, chatId, messageId });
+      socket.emit('message', {message, chatId, messageId});
+      socket.broadcast.emit('message', {message, chatId, messageId});
     });
 
     socket.on('contacts', () => {
@@ -77,7 +77,7 @@ const socket = app => {
     let keys = Object.keys(activeChats);
     keys.forEach(key => {
       let actualConversation = activeChats[key];
-      conversations.push({ ...actualConversation });
+      conversations.push({...actualConversation});
     });
 
     console.log(conversations);
